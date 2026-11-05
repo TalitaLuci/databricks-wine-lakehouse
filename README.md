@@ -32,8 +32,7 @@ ingestão, limpeza e validação, preparação de atributos, modelagem responsá
 | AUC-ROC no teste | 0,859 |
 | Limiar 0,5 no teste | precisão 0,511, recall 0,713, F1 0,595 |
 
-O modelo tem desempenho **moderado, não excelente**: indica vinhos bons com cerca de 2,7 vezes mais acerto que o acaso, mas
-erra bastante. As [limitações](#limitações-e-cuidados-de-interpretação) estão detalhadas mais abaixo.
+O modelo apresenta desempenho moderado: sua AUC-PR (0,565) é aproximadamente três vezes a referência de um classificador sem capacidade discriminativa (prevalência positiva de 0,190). Ainda assim, há limitações importantes de precisão, sobreajuste e calibração, detalhadas nesta documentação.
 
 ## Arquitetura
 
