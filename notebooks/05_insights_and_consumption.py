@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 05 · Insights e consumo — Da camada Gold ao apoio à decisão
 # MAGIC
@@ -729,15 +733,38 @@ display(spark.createDataFrame(sorted(generated), "file string, size_bytes long")
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ## Como levar os arquivos para o GitHub
-# MAGIC
-# MAGIC 1. No Databricks, abra `Catalog` → `workspace` → `wine_gold` → `reports` e baixe os arquivos (os PNGs de `figures/`, `results_summary.md` e `model_comparison.csv`).
-# MAGIC 2. Coloque os PNGs em `docs/figures/` do repositório e referencie-os no README.
-# MAGIC 3. Use `results_summary.md` como base para a seção de resultados do README, revisando o texto antes de publicar.
-# MAGIC 4. Exporte os notebooks do Databricks como `.py` (formato fonte) para a pasta `notebooks/`.
-# MAGIC 5. Não versione os CSVs originais; eles permanecem no Volume. Revise os resultados e imagens antes de publicar.
-# MAGIC
-# MAGIC ## Próximo passo
-# MAGIC
-# MAGIC `README.md` do projeto: visão geral, diagrama da arquitetura medalhão, decisões de projeto, resultados, limitações e como reproduzir.
+# Célula auxiliar: imprime em texto as tabelas necessárias para o README.
+def show(title, df):
+    print(f"\n===== {title} =====")
+    print(df.to_string(index=False))
+
+show("Faixas de probabilidade (6.1)", probability_bands.toPandas())
+show("Cenários de revisão (6.2)", review_scenarios.toPandas())
+show("Desempenho por tipo de vinho (6.4)", by_type.toPandas())
+
+show(
+    "Vinhos bons por faixa de álcool",
+    alcohol_pdf.sort_values(["wine_type", "band_order"])[
+        ["wine_type", "alcohol_band", "records", "good_wines", "pct_good", "avg_quality"]
+    ],
+)
+
+show(
+    "Importância dos atributos (modelo selecionado)",
+    importance_pdf.sort_values("importance", ascending=False)[
+        ["feature", "importance_type", "importance"]
+    ],
+)
+
+show(
+    "Matriz de confusão no teste",
+    latest_predictions.groupBy("label", "prediction").count()
+    .orderBy("label", "prediction").toPandas(),
+)
+
+show(
+    "Histórico Delta da Silver",
+    spark.sql(f"DESCRIBE HISTORY {SILVER_TABLE}")
+    .select("version", "timestamp", "operation", "operationMetrics")
+    .orderBy("version").toPandas(),
+)

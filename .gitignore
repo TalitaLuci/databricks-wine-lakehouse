@@ -1,0 +1,7 @@
+# Dados brutos (baixar na fonte, não versionar)
+data/*.csv
+
+# Arquivos temporários
+__pycache__/
+*.pyc
+.DS_Store
